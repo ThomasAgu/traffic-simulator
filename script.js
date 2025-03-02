@@ -1,17 +1,17 @@
 // Datos del grafo (nodos y aristas)
 const nodes = [
-    { id: 1, x: 100, y: 100, state: "red" },
-    { id: 2, x: 200, y: 100, state: "green" },
-    { id: 3, x: 300, y: 100, state: "red" },
-    { id: 4, x: 100, y: 200, state: "green" },
-    { id: 5, x: 200, y: 200, state: "red" },
-    { id: 6, x: 300, y: 200, state: "green" },
-    { id: 7, x: 100, y: 300, state: "red" },
-    { id: 8, x: 200, y: 300, state: "green" },
-    { id: 9, x: 300, y: 300, state: "red" },
-    { id: 10, x: 100, y: 400, state: "red" },
-    { id: 11, x: 200, y: 400, state: "red" },
-    { id: 12, x: 300, y: 400, state: "red" },
+    { id: 1, x: 100, y: 100, state: "red", type: "normal" },
+    { id: 2, x: 200, y: 100, state: "green", type: "normal" },
+    { id: 3, x: 300, y: 100, state: "red", type: "normal" },
+    { id: 4, x: 100, y: 200, state: "green", type: "normal" },
+    { id: 5, x: 200, y: 200, state: "red", type: "normal" },
+    { id: 6, x: 300, y: 200, state: "green", type: "normal" },
+    { id: 7, x: 100, y: 300, state: "red", type: "normal" },
+    { id: 8, x: 200, y: 300, state: "green", type: "special" },
+    { id: 9, x: 300, y: 300, state: "red", type: "normal" },
+    { id: 10, x: 100, y: 400, state: "red", type: "normal" },
+    { id: 11, x: 200, y: 400, state: "red", type: "normal" },
+    { id: 12, x: 300, y: 400, state: "red", type: "normal" },
 ];
 
 // Crear las aristas (enlaces entre nodos)
@@ -67,7 +67,11 @@ const circles = svg.selectAll("circle")
     .attr("cx", d => d.x)
     .attr("cy", d => d.y)
     .attr("r", 20)
-    .attr("fill", d => (d.id === 0 || d.id === 13) ? "gray" : (d.state === "red" ? "red" : "green"))
+    .attr("fill", d => {
+        if (d.id === 0 || d.id === 13) return "gray"; // Nodo de salida
+        if (d.type === "special") return "gray"; // Nodo especial
+        return d.state === "red" ? "red" : "green"; // Nodos normales
+    })
     .attr("stroke", "#fff")
     .attr("stroke-width", 2);
 
@@ -84,7 +88,7 @@ svg.selectAll("text")
 
     function toggleTrafficLights() {
         nodes.forEach(node => {
-            if (node.id !== 0 && node.id !== 13) {
+            if (node.type === "normal") { // Solo cambiar el estado de los nodos normales
                 let randomDelay = Math.floor(Math.random() * 3000) + 1000; // Entre 1s y 4s
                 setTimeout(() => {
                     node.state = (node.state === "red") ? "green" : "red";
@@ -131,11 +135,13 @@ function spawnVehicle() {
     
             let possibleLinks = links.filter(l => l.source === vehicle.node);
             if (possibleLinks.length === 0) return;
+
             let nextLink = possibleLinks[Math.floor(Math.random() * possibleLinks.length)];
             let nextNode = nodes[nextLink.target];
     
-            if (nextNode.state === "red") {
-                setTimeout(moveVehicle, 100); // Esperar si el semáforo está en rojo
+            // Verificar si el siguiente nodo es especial o está en verde
+            if (nextNode.type !== "special" && nextNode.state === "red") {
+                setTimeout(moveVehicle, 1000); // Esperar si el semáforo está en rojo
                 return;
             }
     
