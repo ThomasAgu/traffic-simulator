@@ -82,53 +82,79 @@ svg.selectAll("text")
     .attr("fill", "#333")
     .text(d => `N${d.id}`);
 
-// Alternar luces del semáforo de forma independiente
-function toggleTrafficLights() {
-    nodes.forEach(node => {
-        if (node.id !== 0 && node.id !== 10) {
-            let randomDelay = Math.floor(Math.random() * 2000) + 1000; // Entre 1s y 3s
-            setTimeout(() => {
-                node.state = (node.state === "red") ? "green" : "red";
-                circles.transition()
-                    .duration(1000)
-                    .attr("fill", d => (d.id === 0 || d.id === 13) ? "gray" : (d.state === "red" ? "red" : "green"));
-            }, randomDelay);
-        }
-    });
-}
-setInterval(toggleTrafficLights, 2000);
+    function toggleTrafficLights() {
+        nodes.forEach(node => {
+            if (node.id !== 0 && node.id !== 13) {
+                let randomDelay = Math.floor(Math.random() * 3000) + 1000; // Entre 1s y 4s
+                setTimeout(() => {
+                    node.state = (node.state === "red") ? "green" : "red";
+    
+                    circles.filter(d => d.id === node.id)
+                        .transition()
+                        .duration(1000)
+                        .attr("fill", node.state === "red" ? "red" : "green");
+                }, randomDelay);
+            }
+        });
+    }
+    
+    setInterval(toggleTrafficLights, 2000);
+
+let vehicleId = 0;
 
 // Simular vehículos
 function spawnVehicle() {
-    let vehicle = { node: 0, x: nodes[0].x, y: nodes[0].y };
+    let vehicle = { node: 0, x: nodes[0].x, y: nodes[0].y, id: vehicleId++ };
     let vehicleElem = svg.append("circle")
         .attr("cx", vehicle.x)
         .attr("cy", vehicle.y)
         .attr("r", 8)
-        .attr("fill", "blue");
+        .attr("fill", `hsl(${Math.random() * 360}, 70%, 50%)`);
+
+    // Agregar un texto con el ID del vehículo
+    let vehicleText = svg.append("text")
+        .attr("x", vehicle.x)
+        .attr("y", vehicle.y + 5)
+        .attr("text-anchor", "middle")
+        .attr("font-size", 10)
+        .attr("fill", "#fff")
+        .text(vehicle.id);
     
-    function moveVehicle() {
-        if (vehicle.node === 10) {
-            vehicleElem.remove();
-            return;
-        }
-        let possibleLinks = links.filter(l => l.source === vehicle.node);
-        if (possibleLinks.length === 0) return;
-        let nextLink = possibleLinks[Math.floor(Math.random() * possibleLinks.length)];
-        let nextNode = nodes[nextLink.target];
-        
-        if (nextNode.state === "red") {
-            setTimeout(moveVehicle, 1000);
-            return;
-        }
-        
-        vehicle.node = nextNode.id;
-        vehicleElem.transition()
-            .duration(2000)
-            .attr("cx", nextNode.x)
-            .attr("cy", nextNode.y)
-            .on("end", moveVehicle);
+        function moveVehicle() {
+            if (vehicle.node === 13) {
+                vehicleElem.remove();
+                vehicleText.remove();
+                vehicleCount++;
+                d3.select("#vehicle-counter").text(`Vehículos en salida: ${vehicleCount}`);
+                return;
+            }
+    
+            let possibleLinks = links.filter(l => l.source === vehicle.node);
+            if (possibleLinks.length === 0) return;
+            let nextLink = possibleLinks[Math.floor(Math.random() * possibleLinks.length)];
+            let nextNode = nodes[nextLink.target];
+    
+            if (nextNode.state === "red") {
+                setTimeout(moveVehicle, 100); // Esperar si el semáforo está en rojo
+                return;
+            }
+    
+            vehicle.node = nextNode.id; // Actualizar el nodo actual del vehículo
+    
+            // Mover el círculo y el texto juntos
+            vehicleElem.transition()
+                .duration(2000)
+                .attr("cx", nextNode.x)
+                .attr("cy", nextNode.y)
+                .on("end", moveVehicle);
+    
+            vehicleText.transition()
+                .duration(2000)
+                .attr("x", nextNode.x)
+                .attr("y", nextNode.y + 5); // Ajustar la posición del texto
     }
+    
     moveVehicle();
 }
+
 setInterval(spawnVehicle, 2000);
