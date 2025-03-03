@@ -1,5 +1,4 @@
 export const links = [
-    { source: 0, target: 10 },
     { source: 1, target: 2 }, { source: 1, target: 5 }, { source: 1, target: 4 },
     { source: 2, target: 5 }, 
     { source: 3, target: 2 }, { source: 3, target: 5 },
@@ -8,7 +7,7 @@ export const links = [
     { source: 6, target: 3 },{ source: 6, target: 9 },
     { source: 7, target: 5 }, { source: 7, target: 8 }, { source: 8, target: 9 },
     { source: 9, target: 5 }, { source: 9, target: 18},
-    { source: 10, target: 11}, { source: 10, target: 1}, 
+    { source: 10, target: 11}, { source: 10, target: 1}, { source: 10, target: 0},
     { source: 11, target: 12 },  
     { source: 12, target: 13 },
     { source: 13, target: 14 }, { source: 14, target: 3}, 
@@ -16,7 +15,7 @@ export const links = [
     { source: 15, target: 16 },
     { source: 16, target: 17 },
     { source: 17, target: 18 },
-    { source: 18, target: 19 }, { source: 18, target: 26 },
+    { source: 18, target: 19 },
     { source: 19, target: 20 },
     { source: 20, target: 21 },
     { source: 21, target: 22 },
