@@ -37,3 +37,30 @@ export function dijkstra(startId, endId) {
     }
     return path;
 }
+
+export function createMutex() {
+    let locked = false;
+    const queue = [];
+
+    function acquire() {
+        return new Promise((resolve) => {
+            if (!locked) {
+                locked = true;
+                resolve();
+            } else {
+                queue.push(resolve);
+            }
+        });
+    }
+
+    function release() {
+        if (queue.length > 0) {
+            const next = queue.shift();
+            next();
+        } else {
+            locked = false;
+        }
+    }
+
+    return { acquire, release };
+}
