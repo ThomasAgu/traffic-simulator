@@ -1,5 +1,4 @@
 import { createMutex } from "./utils.js";
-
 export const nodes = [
     { id: 0, x: 50, y: 300, state: "none", mutex: createMutex()},
     { id: 1, x: 200, y: 200, state: "red", type: "normal", queue: [], mutex: createMutex() },

@@ -1,21 +1,8 @@
-// main.js
-import { createGraph } from "./graph.js";
-import { toggleTrafficLights, spawnVehicle } from "./simulation.js";
+import { links } from "./data/links.js";
+import { nodes } from "./data/nodes.js";
+import { Graph } from "./classes/Graph.js";
+import { Simulation } from "./classes/Simulation.js";
 
-const width = window.innerWidth, height = window.innerHeight;
-const { svg, circles } = createGraph("graph-container", width, height);
-
-// Iniciar la simulación
-setInterval(() => toggleTrafficLights(circles), 2000);
-let vehicleCount = 0;
-const maxVehicles = 100;
-
-const interval = setInterval(() => {
-    if (vehicleCount >= maxVehicles) {
-        clearInterval(interval); // Detiene el intervalo cuando llega a 100 vehículos
-        return;
-    }
-
-    spawnVehicle(svg);
-    vehicleCount++;
-}, 200);
+new Graph();
+const simulation = new Simulation(nodes, links);
+simulation.start();
