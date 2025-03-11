@@ -48,7 +48,7 @@ export class Painter {
             .attr("cy", nextNode.y);
 
         vehicleText.transition()
-            .duration(500)
+            .duration(500) 
             .attr("x", nextNode.x)
             .attr("y", nextNode.y + 5);
     }

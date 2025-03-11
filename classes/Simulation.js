@@ -1,11 +1,12 @@
 import { Vehicle } from "./Vehicle.js";
 import { Node } from "./Node.js";
+import {updateCounters, state} from "../data/counters.js";
 
 export class Simulation {
     constructor(nodes, links){
         this.nodes = nodes.map(node => new Node(node.id, node.x, node.y, node.state, node.type));
         this.links = links;
-        this.totalVehicles = 100;
+        this.totalVehicles = 1000;
     }
 
     start(){
@@ -23,8 +24,10 @@ export class Simulation {
             const finalPos = Math.floor(Math.random() * this.nodes.length);
             new Vehicle(vehicleCount, this.nodes[initialPos], this.nodes[finalPos], this.nodes).init()
             vehicleCount++;
-
-        }, 200);
+            state.vehicleCount = vehicleCount;
+            state.vehicleInSystem = state.vehicleCount - state.finishedVehicles;
+            updateCounters();
+        }, 50);
     }
 
     stop() {

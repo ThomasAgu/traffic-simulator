@@ -1,18 +1,78 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Grafo con D3</title>
+  <title>Visualización de Grafo</title>
   <link rel="stylesheet" href="styles.css">
   <script src="https://d3js.org/d3.v7.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div id="graph-container"></div>
-  <div id="counters">
-    <div id="vehicle-counter">Vehículos en salida: 0</div>
-    <div id="vehicles-in-system">Vehículos en la red: 0</div>  
+  <div class="app-container">
+    <header>
+      <h1>Red de semaforos</h1>
+    </header>
+    
+    <main>
+      <div id="graph-container">
+        <!-- El grafo D3 se renderizará aquí -->
+      </div>
+      
+      <div class="dashboard">
+        <h2>Estadísticas</h2>
+        <div class="counters">
+          <div class="counter-card">
+            <div class="counter-icon">🚗</div>
+            <div class="counter-info">
+              <span class="counter-label">Vehículos creados</span>
+              <span id="vehicle-counter" class="counter-value">0</span>
+            </div>
+          </div>
+          
+          <div class="counter-card">
+            <div class="counter-icon">⚙️</div>
+            <div class="counter-info">
+              <span class="counter-label">Vehículos en el sistema</span>
+              <span id="vehicles-in-system" class="counter-value">0</span>
+            </div>
+          </div>
+          
+          <div class="counter-card">
+            <div class="counter-icon">✅</div>
+            <div class="counter-info">
+              <span class="counter-label">Vehículos que terminaron</span>
+              <span id="vehicles-finished" class="counter-value">0</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="legend">
+          <h3>Estados</h3>
+          <div class="legend-item">
+            <span class="legend-color" style="background-color: #e74c3c;"></span>
+            <span>Semaforo en rojo</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color" style="background-color: #2ecc71;"></span>
+            <span>Semaforo en verde</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color" style="background-color: #95a5a6;"></span>
+            <span>Sin semaforo</span>
+          </div>
+        </div>
+      </div>
+    </main>
+    
+    <footer>
+      <p>Visualización de grafo con D3.js</p>
+    </footer>
   </div>
+  
   <script type="module" src="main.js"></script>
 </body>
 </html>
+

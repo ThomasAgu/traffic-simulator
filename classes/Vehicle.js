@@ -1,7 +1,7 @@
 import { dijkstra } from "../data/utils.js";
 import { Painter } from "../service/Painter.js";
-import { nodes } from "../data/nodes.js";
-import { Simulation } from "./Simulation.js";
+import {updateCounters, state} from "../data/counters.js";
+
 
 export class Vehicle {
     constructor(id, initialNode, finalNode, nodes) {
@@ -59,6 +59,9 @@ export class Vehicle {
     removeVehicleFromUI(vehicleElem, vehicleText) {
         vehicleElem.remove();
         vehicleText.remove();
+        state.finishedVehicles++;
+        state.vehicleInSystem = state.vehicleCount - state.finishedVehicles;
+        updateCounters();
     }
 
     getCurrentNode() {
