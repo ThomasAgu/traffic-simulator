@@ -64,3 +64,19 @@ export function createMutex() {
 
     return { acquire, release };
 }
+
+//Funcion creada para calcular el corrimiento sobre UI de una cola segun la posicion de los nodos y su inclinacion
+export function calculateOrientation(nodeID2, nodeID1) {
+    const node1 = getNode(nodeID1);
+    const node2 = getNode(nodeID2);
+
+    let angle = Math.atan2(node2.y - node1.y, node2.x - node1.x);
+    let xDisplacement = node2.x - 25 * Math.cos(angle); // Desplazamiento en X
+    let yDisplacement = node2.y - 25  * Math.sin(angle); // Desplazamiento en Y
+
+    return { x: xDisplacement, y: yDisplacement };;
+}
+
+function getNode(id){
+    return nodes.filter(node => node.id === id)[0];
+}

@@ -1,11 +1,15 @@
 import { Vehicle } from "./Vehicle.js";
 import { Node } from "./Node.js";
 import {updateCounters, state} from "../data/counters.js";
+import { Link } from "./Link.js";
 
 export class Simulation {
     constructor(nodes, links){
-        this.nodes = nodes.map(node => new Node(node.id, node.x, node.y, node.state, node.type));
-        this.links = links;
+        this.links = links.map(link => new Link(link.source, link.target, link.priority))
+        this.nodes = nodes.map(node => {
+            const exitLinks = this.links.filter(link => link.source === node.id)
+            const incomingLinks = (this.links.filter(link => link.target === node.id));
+            return new Node(node.id, node.x, node.y, node.state, node.type, exitLinks, incomingLinks)})
         this.totalVehicles = 1000;
     }
 

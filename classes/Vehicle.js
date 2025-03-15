@@ -21,7 +21,7 @@ export class Vehicle {
 
     transit(vehicleElem, vehicleText) {
         let nextNode = this.nodes[(this.path[this.index + 1])];
-    
+        
         if (!nextNode) {
             this.removeVehicleFromUI(vehicleElem, vehicleText);
             
@@ -45,12 +45,18 @@ export class Vehicle {
             this.currentNode.queue.length > 0 && 
             this.currentNode.queue[0].id === this.id
         ) {
+            //calculo de velocidad (esto puede mejorar)
+            const linkToNextNode =  this.currentNode.exitLinks.filter(link => link.target === nextNode.id)[0];
+            const min = linkToNextNode.getMinVel();
+            const max = linkToNextNode.getMaxVel();
+            const randomVel = Math.random() * (max - min) + min * 100;
+            
             this.currentNode.dequeue();
-            Painter.get().moveVehicle(vehicleElem, vehicleText, nextNode);
+            Painter.get().moveVehicle(vehicleElem, vehicleText, nextNode, randomVel);
             this.setCurrentNode(nextNode);
             nextNode.enqueue(this);
             this.index++;
-            setTimeout(() => this.transit(vehicleElem, vehicleText), 500);
+            setTimeout(() => this.transit(vehicleElem, vehicleText), randomVel);
         } else {
             setTimeout(() => this.checkAndMove(vehicleElem, vehicleText, nextNode), 200);
         }

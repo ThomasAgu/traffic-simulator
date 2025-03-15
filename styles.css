@@ -23,6 +23,13 @@ body {
   line-height: 1.6;
 }
 
+.link {
+  fill: none;
+  stroke: #999;
+  stroke-width: 2;
+}
+
+
 .app-container {
   display: flex;
   flex-direction: column;

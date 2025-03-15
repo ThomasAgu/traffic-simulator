@@ -1,4 +1,5 @@
 import { nodes } from "../data/nodes.js";
+import { calculateOrientation } from "../data/utils.js";
 
 export class Painter {
     static instance = null;
@@ -41,36 +42,36 @@ export class Painter {
         return [vehicleElem, vehicleText];
     }
 
-    moveVehicle(vehicleElem, vehicleText, nextNode) {
+    moveVehicle(vehicleElem, vehicleText, nextNode, duration) {
         vehicleElem.transition()
-            .duration(500)
+            .duration(duration)
             .attr("cx", nextNode.x)
             .attr("cy", nextNode.y);
 
         vehicleText.transition()
-            .duration(500) 
+            .duration(duration) 
             .attr("x", nextNode.x)
             .attr("y", nextNode.y + 5);
     }
 
-    drawGraph(nodes, links) {
+   drawGraph(nodes, links) {
         this.svg.append("defs").append("marker")
-                .attr("id", "arrowhead")
-                .attr("viewBox", "0 -5 10 10")
-                .attr("refX", 20)
-                .attr("refY", 0)
-                .attr("markerWidth", 6)
-                .attr("markerHeight", 6)
-                .attr("orient", "auto")
-                .append("path")
-                .attr("d", "M 0,-5 L 10,0 L 0,5")
-                .attr("fill", "#999");
+            .attr("id", "arrowhead")
+            .attr("viewBox", "0 -3 6 6") // Smaller viewbox
+            .attr("refX", 20) // Adjust the position to fit the new size
+            .attr("refY", 0)
+            .attr("markerWidth", 4) // Smaller width
+            .attr("markerHeight", 4) // Smaller height
+            .attr("orient", "auto")
+            .append("path")
+            .attr("d", "M 0,-3 L 6,0 L 0,3") // Smaller arrow shape
+            .attr("fill", "#999");
         
         // Dibujar aristas con flechas
         this.svg.selectAll("path")
             .data(links)
             .enter().append("path")
-            .attr("d", d => {
+            .attr("d", d => { 
                 const source = nodes[d.source];
                 const target = nodes[d.target];
                 if (d.bidirectional) {
@@ -92,6 +93,15 @@ export class Painter {
             })
             .attr("stroke", "#999")
             .attr("stroke-width", 2)
+            .attr("stroke", d => {
+                switch (d.priority) {
+                    case 1: return "#808080";  
+                    case 2: return "#909090";  
+                    case 3: return "#AFAFAF";  
+                    case 4: return "#BEBEBE"; 
+                    default: return "#808080";
+                }
+            })
             .attr("fill", "none")
             .attr("marker-end", "url(#arrowhead)");
         
@@ -103,7 +113,6 @@ export class Painter {
                 .attr("cy", d => d.y)
                 .attr("r", 20)
                 .attr("fill", d => {
-                    if (d.id === 0) return "gray"; // Nodo de salida
                     if (d.type === "special") return "gray"; // Nodo especial
                     return d.state === "red" ? "red" : "green"; // Nodos normales
                 })
@@ -123,11 +132,37 @@ export class Painter {
         
         }
 
-    toggleTrafficLight(nodeID, state) {
+    toggleTrafficLight(nodeID, state, incomingQueues) {
         const node = this.circles.filter(d => d.id === nodeID)
         node
             .transition()
             .duration(1000)
             .attr("fill", state);
+        
+
+        incomingQueues.forEach(queue => {
+            const {x,y} = calculateOrientation(queue.entryNodeID, queue.outerNodeID)
+            d3.select(`circle[cx='${x}'][cy='${y}']`)
+            .transition()
+            .duration(500)
+            .attr("fill", state); // Cambia el color a azul
+        });
+    }
+
+    printQueue(state, id1, id2) {
+        const {x,y} = calculateOrientation(id1, id2);
+        this.svg.append("circle")
+        .attr("cx", x)
+        .attr("cy", y)
+        .attr("r", 5)
+        .attr("fill", state => {
+            switch (state) {
+                case "none": return "gray";  
+                case "red": return "red";  
+                case "green": return "green";  
+                default: return "gray";
+            }
+        })
+        .attr("fill", `${state}`);
     }
 }

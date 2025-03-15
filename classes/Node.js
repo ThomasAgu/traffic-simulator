@@ -1,12 +1,15 @@
 import { Painter } from "../service/Painter.js";
+import { Queue } from "./Queue.js";
 
 export class Node {
-    constructor(id, x, y, state = "none", type = "normal") {
+    constructor(id, x, y, state = "none", type = "normal", exitLinks, incomingLinks) {
         this.id = id;
         this.x = x;
         this.y = y;
         this.state = state;
         this.type = type;
+        this.exitLinks = exitLinks;
+        this.incomingQueues = incomingLinks.map((incomingLink) => new Queue(this.state, this.id, incomingLink.source));
         this.queue = [];
     }
     
@@ -23,7 +26,7 @@ export class Node {
 
     toggleTrafficLight() {
         this.state = (this.getState() === "red") ? "green" : "red";
-        Painter.get().toggleTrafficLight(this.id, this.state);
+        Painter.get().toggleTrafficLight(this.id, this.state, this.incomingQueues);
     }
 
     enqueue(vehicle) {
