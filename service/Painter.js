@@ -149,20 +149,16 @@ export class Painter {
         });
     }
 
-    printQueue(state, id1, id2) {
-        const {x,y} = calculateOrientation(id1, id2);
+    printQueue(state, type, id1, id2) {
+
+        if (type !== "normal") return;
+        
+        const {x, y} = calculateOrientation(id1, id2);
+
         this.svg.append("circle")
-        .attr("cx", x)
-        .attr("cy", y)
-        .attr("r", 5)
-        .attr("fill", state => {
-            switch (state) {
-                case "none": return "gray";  
-                case "red": return "red";  
-                case "green": return "green";  
-                default: return "gray";
-            }
-        })
-        .attr("fill", `${state}`);
-    }
+            .attr("cx", x)
+            .attr("cy", y)
+            .attr("r", 5)
+            .attr("fill", state);
+        }
 }

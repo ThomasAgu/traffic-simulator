@@ -9,7 +9,7 @@ export class Node {
         this.state = state;
         this.type = type;
         this.exitLinks = exitLinks;
-        this.incomingQueues = incomingLinks.map((incomingLink) => new Queue(this.state, this.id, incomingLink.source));
+        this.incomingQueues = incomingLinks.map((incomingLink) => new Queue(this.state, this.type, this.id, incomingLink.source));
         this.queue = [];
     }
     
