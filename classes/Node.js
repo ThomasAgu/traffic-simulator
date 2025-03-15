@@ -10,6 +10,7 @@ export class Node {
         this.type = type;
         this.exitLinks = exitLinks;
         this.incomingQueues = incomingLinks.map((incomingLink) => new Queue(this.state, this.type, this.id, incomingLink.source));
+        this.queuesState = this.incomingQueues.map(queue => queue.getState());
         this.queue = [];
     }
     
@@ -26,15 +27,44 @@ export class Node {
 
     toggleTrafficLight() {
         this.state = (this.getState() === "red") ? "green" : "red";
-        Painter.get().toggleTrafficLight(this.id, this.state, this.incomingQueues);
+        
+        if (this.incomingQueues.length === 0) return;
+    
+        // Encuentra el índice de la cola que está en verde
+        let greenIndex = this.incomingQueues.findIndex(queue => queue.getState() === 'green');
+    
+        // Si todas están en rojo o en verde, se empieza desde el primer índice
+        if (greenIndex === -1) {
+            greenIndex = 0;
+        }
+    
+        // Poner todas en rojo
+        this.incomingQueues.forEach(queue => queue.setState("red"));
+    
+        // Cambiar al siguiente de forma cíclica
+        let nextIndex = (greenIndex + 1) % this.incomingQueues.length;
+        this.incomingQueues[nextIndex].setState("green");
+    
+        // Llamar al Painter para actualizar la UI
+        Painter.get().toggleTrafficLight(this.id, this.incomingQueues);
     }
 
     enqueue(vehicle) {
         this.queue.push(vehicle);
     }
+
+    enqueueIncomingQueues(vehicle, sourceID, targetID) {
+        const queue = this.getIncomingQueue(sourceID, targetID);
+        queue.push(vehicle);
+    }
     
     dequeue() {
         return this.queue.shift(); // Elimina el primer vehículo en lugar del último
+    }
+
+    dequeueIncomingQueues(sourceID, targetID) {
+        const queue = this.getIncomingQueue(sourceID, targetID);
+        return queue.shift();
     }
     
 
@@ -44,5 +74,12 @@ export class Node {
 
     getState(){
         return this.state;
+    }
+
+    getIncomingQueue(sourceID, targetID) {
+        return this.incomingQueues.filter(
+            queue => queue.getEntryNodeID() === sourceID 
+            && queue.getOuterNodeID() === targetID
+        )[0];
     }
 }

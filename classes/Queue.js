@@ -10,4 +10,20 @@ export class Queue {
         this.outerNodeID = outerNodeID;
         Painter.get().printQueue(this.state, this.type, entryNodeID, outerNodeID);
     }
+
+    setState(state) {
+        this.state = state;
+    } 
+
+    getState() {
+        return this.state;
+    }
+
+    getEntryNodeID() {
+        return this.entryNodeID;
+    }
+
+    getOuterNodeID() {
+        return this.outerNodeID;
+    }
 }

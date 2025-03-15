@@ -11,6 +11,7 @@ export class Vehicle {
         this.path = dijkstra(initialNode.id, finalNode.id);
         this.index = 0;
         this.nodes = nodes;
+        //El nodo va a arrancar en una cola aleatoria y fue
         this.currentNode.enqueue(this);
     }
 
@@ -52,7 +53,8 @@ export class Vehicle {
             const randomVel = Math.random() * (max - min) + min * 100;
             
             this.currentNode.dequeue();
-            Painter.get().moveVehicle(vehicleElem, vehicleText, nextNode, randomVel);
+
+            Painter.get().moveVehicle(vehicleElem, vehicleText, this.currentNode, nextNode, randomVel);
             this.setCurrentNode(nextNode);
             nextNode.enqueue(this);
             this.index++;

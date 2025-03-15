@@ -42,16 +42,36 @@ export class Painter {
         return [vehicleElem, vehicleText];
     }
 
-    moveVehicle(vehicleElem, vehicleText, nextNode, duration) {
-        vehicleElem.transition()
-            .duration(duration)
-            .attr("cx", nextNode.x)
-            .attr("cy", nextNode.y);
+    moveVehicle(vehicleElem, vehicleText, currentNode, nextNode, duration) {
+        const {x, y} = calculateOrientation(nextNode.id, currentNode.id);
+        
+        const durationToCenterNode = duration * 0.2;
+        const durationToNextnode = duration * 0.8;
 
-        vehicleText.transition()
-            .duration(duration) 
-            .attr("x", nextNode.x)
-            .attr("y", nextNode.y + 5);
+        //transision para ir al centro del nodo
+        vehicleElem.transition()
+        .duration(durationToCenterNode)
+        .attr("cx", currentNode.x)
+        .attr("cy", currentNode.y)
+        .on("end", function () { // Encadena la siguiente transición
+            d3.select(this)
+                .transition()
+                .duration(durationToNextnode)
+                .attr("cx", x)
+                .attr("cy", y);
+        });
+
+    vehicleText.transition()
+        .duration(durationToCenterNode)
+        .attr("x", currentNode.x)
+        .attr("y", currentNode.y + 5)
+        .on("end", function () { // Encadena la siguiente transición
+            d3.select(this)
+                .transition()
+                .duration(durationToNextnode)
+                .attr("x", x)
+                .attr("y", y + 5);
+        });    
     }
 
    drawGraph(nodes, links) {
@@ -112,11 +132,16 @@ export class Painter {
                 .attr("cx", d => d.x)
                 .attr("cy", d => d.y)
                 .attr("r", 20)
-                .attr("fill", d => {
-                    if (d.type === "special") return "gray"; // Nodo especial
-                    return d.state === "red" ? "red" : "green"; // Nodos normales
-                })
-                .attr("stroke", "#fff")
+                //.attr("fill", d => {
+                //    if (d.type === "special") return "gray"; // Nodo especial
+                //    return d.state === "red" ? "red" : "green"; // Nodos normales
+                //})
+                .attr("fill", "gray")
+                //.attr("stroke", "#fff")
+                .attr("stroke", d => {
+                        if (d.type === "special") return "gray"; // Nodo especial
+                        return d.state === "red" ? "red" : "green"; // Nodos normales
+                    })
                 .attr("stroke-width", 2);
         
             // Agregar etiquetas a los nodos
@@ -132,20 +157,19 @@ export class Painter {
         
         }
 
-    toggleTrafficLight(nodeID, state, incomingQueues) {
+    toggleTrafficLight(nodeID, incomingQueues) {
         const node = this.circles.filter(d => d.id === nodeID)
         node
             .transition()
             .duration(1000)
-            .attr("fill", state);
-        
+            .attr("stroke", 'grey');
 
         incomingQueues.forEach(queue => {
             const {x,y} = calculateOrientation(queue.entryNodeID, queue.outerNodeID)
             d3.select(`circle[cx='${x}'][cy='${y}']`)
             .transition()
             .duration(500)
-            .attr("fill", state); // Cambia el color a azul
+            .attr("fill", queue.getState());
         });
     }
 
