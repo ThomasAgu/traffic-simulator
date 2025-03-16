@@ -12,7 +12,8 @@ export class Vehicle {
         this.index = 0;
         this.nodes = nodes;
         //El nodo va a arrancar en una cola aleatoria y fue
-        this.currentNode.enqueue(this);
+        //this.currentNode.enqueue(this);
+        this.currentNode.incomingQueues[0].enqueue(this);
     }
 
     init() {
@@ -26,10 +27,13 @@ export class Vehicle {
         if (!nextNode) {
             this.removeVehicleFromUI(vehicleElem, vehicleText);
             
-            if (this.currentNode.queue.length > 0) {
-                const index = this.currentNode.queue.indexOf(this);
+            //Removerlo de la incomingLink de this.currentNode (donde esta encolado)
+            const QueuedWhereIAmEncoled =  this.currentNode.getQueueWhereIAm(this.id);
+        
+            if (QueuedWhereIAmEncoled.queue.length > 0) {
+                const index = QueuedWhereIAmEncoled.queue.indexOf(this);
                 if (index !== -1) {
-                    this.currentNode.queue.splice(index, 1);
+                    QueuedWhereIAmEncoled.queue.splice(index, 1);
                 }
             }
             return;
@@ -41,10 +45,13 @@ export class Vehicle {
     }
 
     checkAndMove(vehicleElem, vehicleText, nextNode) {
+        //fijarse donde estra encolado. El estado y todo eso
+        const QueuedWhereIAmEncoled =  this.currentNode.getQueueWhereIAm(this.id);
+        debugger
         if (
-            this.currentNode.getState() !== "red" && 
-            this.currentNode.queue.length > 0 && 
-            this.currentNode.queue[0].id === this.id
+            QueuedWhereIAmEncoled.getState() !== "red" && 
+            QueuedWhereIAmEncoled.queue.length > 0 && 
+            QueuedWhereIAmEncoled.queue[0].id === this.id
         ) {
             //calculo de velocidad (esto puede mejorar)
             const linkToNextNode =  this.currentNode.exitLinks.filter(link => link.target === nextNode.id)[0];
@@ -52,11 +59,13 @@ export class Vehicle {
             const max = linkToNextNode.getMaxVel();
             const randomVel = Math.random() * (max - min) + min * 100;
             
-            this.currentNode.dequeue();
+            //fijarse donde estra encolado. Una vez eso desencolarlo
+            QueuedWhereIAmEncoled.dequeue();
 
             Painter.get().moveVehicle(vehicleElem, vehicleText, this.currentNode, nextNode, randomVel);
+            //fijarse donde tiene que encolarse encolado. Una vez eso desencolarlo (incoming link nextNode.id + this.currentNode.id)
+            nextNode.enqueue(this, this.currentNode.id);
             this.setCurrentNode(nextNode);
-            nextNode.enqueue(this);
             this.index++;
             setTimeout(() => this.transit(vehicleElem, vehicleText), randomVel);
         } else {

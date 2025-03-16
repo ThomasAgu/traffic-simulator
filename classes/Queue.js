@@ -26,4 +26,16 @@ export class Queue {
     getOuterNodeID() {
         return this.outerNodeID;
     }
+
+    enqueue(vehicle) {
+        this.queue.push(vehicle);
+    }
+
+    dequeue() {
+        return this.queue.shift()
+    }
+
+    searchForVehicle(vehicleID) {
+        return this.queue.filter(vehicle => vehicle.id === vehicleID)[0];
+    }
 }

@@ -49,13 +49,9 @@ export class Node {
         Painter.get().toggleTrafficLight(this.id, this.incomingQueues);
     }
 
-    enqueue(vehicle) {
-        this.queue.push(vehicle);
-    }
-
-    enqueueIncomingQueues(vehicle, sourceID, targetID) {
-        const queue = this.getIncomingQueue(sourceID, targetID);
-        queue.push(vehicle);
+    enqueue(vehicle, pastNodeId) {
+        const queueToEnqueue = this.getIncomingQueue(this.id, pastNodeId)
+        queueToEnqueue.enqueue(vehicle);
     }
     
     dequeue() {
@@ -81,5 +77,11 @@ export class Node {
             queue => queue.getEntryNodeID() === sourceID 
             && queue.getOuterNodeID() === targetID
         )[0];
+    }
+
+    getQueueWhereIAm(vehicleID) {
+        return this.incomingQueues.filter(
+            queue => queue.searchForVehicle(vehicleID)
+        )[0]
     }
 }

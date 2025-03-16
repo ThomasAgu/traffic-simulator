@@ -7,7 +7,7 @@ export const links = [
     { source: 5, target: 1, priority: 2 }, { source: 5, target: 3, priority: 2 }, { source: 5, target: 7, priority: 2 }, { source: 5, target: 9, priority: 2},
     { source: 6, target: 3, priority: 1 }, { source: 6, target: 9, priority: 4 },
     { source: 7, target: 5, priority: 2 }, { source: 7, target: 8, priority: 3 }, { source: 8, target: 9, priority: 1 },
-    { source: 9, target: 5, priority: 2 }, { source: 9, target: 18, priority: 2 },
+    { source: 9, target: 5, priority: 2 }, { source: 9, target: 18, priority: 2 }, { source: 9, target: 6, priority: 2 },
     { source: 10, target: 11, priority: 1 }, { source: 10, target: 1, priority: 2 }, { source: 10, target: 0, priority: 1 },
     { source: 11, target: 12, priority: 1 },  
     { source: 12, target: 13, priority: 1 },
